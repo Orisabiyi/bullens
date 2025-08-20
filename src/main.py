@@ -1,11 +1,12 @@
 from fastapi import FastAPI
-from controllers.bullens_chat_controller import router as chat_router
+from src.controllers import chat_controller
+
 
 app = FastAPI()
 
 app.include_router(
-    chat_router,
-    prefix="/bullens-chat",
+    chat_controller.router,
+    prefix="/bullens",
     tags=["bullens-chat"])
 
 @app.get("/")
