@@ -1,16 +1,8 @@
-import os
-from dotenv import load_dotenv
-from sqlmodel import SQLModel, Field, create_engine, Session
+from sqlmodel import SQLModel, Field
 from fastapi import APIRouter
-
-load_dotenv()
+from src.database import SessionDep
 
 router = APIRouter()
-
-DEV_DB_URL = os.getenv("DEV_DB_URL")
-
-if not DEV_DB_URL:
-    raise ValueError("DEV_DB_URL environment variable is not set.")
 
 
 class Chat(SQLModel, table=True):
@@ -20,5 +12,5 @@ class Chat(SQLModel, table=True):
 
 
 @router.post('/create/chat')
-async def create_chat(ChatArgs: Chat):
+async def create_chat(ChatArgs: Chat, session: SessionDep):
     return {"message": "Chat created successfully!"}
