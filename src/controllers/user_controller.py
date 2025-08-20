@@ -1,4 +1,5 @@
-from sqlmodel import SQLModel, Field, create_engine
+from sqlmodel import SQLModel, Field
+from src.database import SessionDep
 from fastapi import APIRouter
 
 router = APIRouter()
@@ -10,5 +11,5 @@ class User(SQLModel, table=True):
 
 
 @router.post('/create/user')
-async def create_user(user: User):
+async def create_user(user: User, session: SessionDep):
     return {"message": "User created successfully!"}

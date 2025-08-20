@@ -1,19 +1,20 @@
 from fastapi import FastAPI
+from contextlib import asynccontextmanager
 from src.database import create_db_and_tables
 from src.controllers import chat_controller
 
+@asynccontextmanager
+async def lifespan(app: FastAPI):
+    create_db_and_tables()
+    yield
 
-app = FastAPI()
+app = FastAPI(lifespan=lifespan)
 
 app.include_router(
     chat_controller.router,
     prefix="/bullens",
     tags=["bullens-chat"])
 
-
-@app.on_event("startup")
-async def on_startup():
-    create_db_and_tables()
 
 @app.get("/")
 async def root():
