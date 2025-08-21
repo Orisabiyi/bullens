@@ -13,4 +13,8 @@ class Chat(SQLModel, table=True):
 
 @router.post('/create/chat')
 async def create_chat(ChatArgs: Chat, session: SessionDep):
+    chat = Chat(chat_id=ChatArgs.chat_id, user_id=ChatArgs.user_id, message=ChatArgs.message)
+    session.add(chat)
+    session.commit()
+    session.refresh(chat)
     return {"message": "Chat created successfully!"}
