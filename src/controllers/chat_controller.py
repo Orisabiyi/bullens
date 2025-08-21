@@ -25,7 +25,7 @@ async def stream_and_save(chat_message: str, session: SessionDep, chat: Chat):
     session.refresh(chat)
 
 
-@router.post('/create/chat')
+@router.post('/chat/create')
 async def create_chat(ChatArgs: Chat, session: SessionDep):
     chat = Chat(chat_id=ChatArgs.chat_id, user_id=ChatArgs.user_id, message=ChatArgs.message)
     session.add(chat)
