@@ -1,6 +1,7 @@
 from typing import AsyncGenerator
 from src.utils import OPENAI_API_KEY
 from llama_index.core.agent import FunctionAgent, AgentStream
+from llama_index.core.workflow import Context
 from llama_index.llms.openai import OpenAI
 from llama_index.tools.yahoo_finance import YahooFinanceToolSpec
 
@@ -21,7 +22,9 @@ async def create_chat_agent(chat_message: str) -> AsyncGenerator[str, str]:
     llm=OpenAI(model="gpt-4o", openai_api_key=OPENAI_API_KEY, streaming=True),
   )
 
-  agents = workflow.run(user_msg=chat_message)
+  ctx = Context(workflow=workflow)
+
+  agents = workflow.run(user_msg=chat_message, context=ctx)
 
   async for events in agents.stream_events():
     if isinstance(events, AgentStream):

@@ -11,6 +11,18 @@ class Chat(SQLModel, table=True):
     chat_id: str = Field(primary_key=True)
     user_id: str = Field(index=True)
     message: str = Field(index=True)
+    response: str = Field(default='')
+
+async def stream_and_save(chat_message: str, session: SessionDep, chat: Chat):
+    response_buffer = ''
+    async for chunk in create_chat_agent(chat_message):
+        response_buffer += chunk
+        yield chunk
+
+    chat.response = response_buffer
+    session.add(chat)
+    session.commit()
+    session.refresh(chat)
 
 
 @router.post('/create/chat')
@@ -20,4 +32,4 @@ async def create_chat(ChatArgs: Chat, session: SessionDep):
     session.commit()
     session.refresh(chat)
 
-    return StreamingResponse(create_chat_agent(chat.message), media_type="text/event-stream")
+    return StreamingResponse(stream_and_save(chat.message, session, chat), media_type="text/event-stream")
