@@ -48,13 +48,13 @@ async def login_user(Body: LoginPayload, session: SessionDep):
         else:
           user = session.get(User, Body.email)
 
-        if not user:
+          if not user:
               raise ValueError("User not found")
           
-        compared_password = pwd_context.verify(Body.password, user.password)
+          compared_password = pwd_context.verify(Body.password, user.password)
 
-        if not compared_password:
-            raise ValueError("Invalid password")
+          if not compared_password:
+              raise ValueError("Invalid password")
       
         
         return {"message": "user login successful!"}
