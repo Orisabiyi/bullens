@@ -1,6 +1,8 @@
 from sqlmodel import SQLModel, Field
 from fastapi import APIRouter
 from src.database import SessionDep
+from fastapi.responses import StreamingResponse
+from src.agents.agent_chat import create_chat_agent
 
 router = APIRouter()
 
@@ -17,4 +19,5 @@ async def create_chat(ChatArgs: Chat, session: SessionDep):
     session.add(chat)
     session.commit()
     session.refresh(chat)
-    return {"message": "Chat created successfully!"}
+
+    return StreamingResponse(create_chat_agent(chat.message), media_type="text/event-stream")

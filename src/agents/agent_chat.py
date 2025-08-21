@@ -1,3 +1,4 @@
+from typing import AsyncGenerator
 from src.utils import OPENAI_API_KEY
 from llama_index.core.agent import FunctionAgent, AgentStream
 from llama_index.llms.openai import OpenAI
@@ -5,7 +6,7 @@ from llama_index.tools.yahoo_finance import YahooFinanceToolSpec
 
 
 
-async def create_chat_agent(chat_message: str):
+async def create_chat_agent(chat_message: str) -> AsyncGenerator[str, str]:
   tool_spec = YahooFinanceToolSpec()
 
   workflow = FunctionAgent(
