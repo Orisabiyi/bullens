@@ -3,6 +3,7 @@ from pydantic import BaseModel
 from sqlmodel import SQLModel, Field
 from src.database import SessionDep
 from passlib.context import CryptContext
+from src.utils import create_access_token
 from fastapi import APIRouter
 
 router = APIRouter()
@@ -14,6 +15,7 @@ class User(SQLModel, table=True):
     username: str = Field(index=True)
     email: str = Field(index=True, unique=True)
     password: str = Field()
+    id_used: Optional[bool] = Field(default=None, index=True)
 
 
 class LoginPayload(BaseModel):
@@ -43,21 +45,22 @@ async def create_user(user: User, session: SessionDep):
 async def login_user(Body: LoginPayload, session: SessionDep):
     
     try:
-        if Body.user_id:
-            user = session.get(User, Body.user_id)
-        else:
-          user = session.get(User, Body.email)
+        user = session.get(User, Body.email)
 
-          if not user:
-              raise ValueError("User not found")
-          
-          compared_password = pwd_context.verify(Body.password, user.password)
-
-          if not compared_password:
-              raise ValueError("Invalid password")
-      
+        if not user:
+          raise ValueError("User not found")
         
-        return {"message": "user login successful!"}
+        compared_password = pwd_context.verify(Body.password, user.password)
+
+        if not compared_password:
+            raise ValueError("Invalid password")
+        
+        if user.user_id is None:
+            raise ValueError("Invalid user data")
+
+        access_token = create_access_token(user.user_id)
+        
+        return {"message": "user login successful!", "token": access_token}
     
     except Exception as e:
         return {"error": str(e)}
