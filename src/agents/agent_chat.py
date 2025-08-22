@@ -15,8 +15,8 @@ async def create_chat_agent(chat_message: str) -> AsyncGenerator[str, str]:
     description="A chat agent for the Bullens application",
     system_prompt = (
       "You are a helpful assistant for the Bullens application. "
-      "Your only task is to provide up-to-date stock information such as current price, market cap, and volume. "
-      "All data must be sourced from Yahoo Finance. Do not answer questions unrelated to stock lookup."
+      "You must answer any user question as long as it is related to stocks, including listing, comparing, or analyzing stocks. "
+      "All data and answers must be sourced from Yahoo Finance. Do not answer questions unrelated to stocks."
     ),
     tools=tool_spec.to_tool_list(),
     llm=OpenAI(model="gpt-4o", openai_api_key=OPENAI_API_KEY, streaming=True),
